@@ -11,3 +11,45 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+model VerificationCode {
+  id         String   @id @default(uuid())
+  email      String
+  code_hash  String
+  expires_at DateTime
+  attempts   Int      @default(0)
+  created_at DateTime @default(now())
+  verified   Boolean  @default(false)
+}
+
+model User {
+  id            String     @id @default(uuid())
+  full_name     String
+  profile_url   String?
+  phone_number  String
+  national_id   String?    @unique
+  email         String     @unique
+  birthdate     DateTime?
+  role          UserRole[]
+  address       String?
+  password_hash String
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+  is_active     Boolean    @default(true)
+}
+
+model UserRole {
+  id   String @id @default(uuid())
+  role Role
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+}

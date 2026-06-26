@@ -4,8 +4,10 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import globalErrorHandler from './app/middleware/globalErrorHandler/index';
-import AppError from './app/utils/appError';
+import globalErrorHandler from './app/middleware/globalErrorHandler/index.js';
+import AppError from './app/utils/appError.js';
+
+import authRouter from './app/modules/auth/auth.route.js';
 
 const app = express();
 app.use(helmet());
@@ -31,12 +33,9 @@ app.use('/api', limiter);
 
 app.use(express.json());
 
-
 // project routes
 
-
-
-
+app.use('/api/v1/auth', authRouter);
 
 app.all(/.*/, (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
